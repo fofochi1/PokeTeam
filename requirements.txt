@@ -1,8 +1,8 @@
 Flask
-requests
-python-dotenv
-psycopg2-binary
-Flask-SQLAlchemy
 flask-login
+Flask-SQLAlchemy
 oauthlib
+psycopg2
 pyOpenSSL
+python-dotenv
+requests
