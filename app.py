@@ -15,7 +15,8 @@ app = flask.Flask(__name__)
 
 @app.route("/")
 def main():
-    return flask.render_template("index.html")
+    current_user = "Signed In User"
+    return flask.render_template("index.html", current_user=current_user)
 
 
 @app.route("/teams")
@@ -25,6 +26,7 @@ def teams():
 
 @app.route("/search_form", methods=["POST"])
 def search():
+    pokemon_name = flask.request.form.get("search")
     return flask.render_template("search.html")
 
 
