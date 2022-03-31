@@ -7,7 +7,14 @@
 
 <body>
     <h1> The Pokedex </h1>
-    <h3>Welcome {{ current_user }}</h3>
+    <h3>Welcome {{ user_id }}</h3>
+
+    <p>Hello, {{user_id}}! You're logged in! Email: {{user_email}}</p>
+    <div>
+        <p>Google Profile Picture:</p>
+        <img src="{{user_pic}}" alt="Google profile pic"></img>
+    </div>
+    <a class="button" href="/logout">Logout</a>
 
     <form action="/teams">
         <button type="submit">Go Look at your team</button>
