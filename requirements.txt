@@ -1,1 +1,8 @@
-Flask 
+Flask
+requests
+python-dotenv
+psycopg2-binary
+Flask-SQLAlchemy
+flask-login
+oauthlib
+pyOpenSSL
