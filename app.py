@@ -18,4 +18,14 @@ def main():
     return flask.render_template("index.html")
 
 
+@app.route("/teams")
+def teams():
+    return flask.render_template("teams.html")
+
+
+@app.route("/search_form", methods=["POST"])
+def search():
+    return flask.render_template("search.html")
+
+
 app.run(debug=True, host=HOST, port=PORT)
