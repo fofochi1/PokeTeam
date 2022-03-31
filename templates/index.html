@@ -2,11 +2,24 @@
 <html>
 
 <head>
-    <title> PlaceHolder </title>
+    <title> The Pokedex </title>
 </head>
 
 <body>
-    <h1> Temporary PlaceHolder Page. </h1>
+    <h1> The Pokedex </h1>
+    <h3>Welcome {{ current_user }}</h3>
+
+    <form action="/teams">
+        <button type="submit">Go Look at your team</button>
+    </form>
+
+    <h3>Search for a Pokemon</h3>
+    <form method="POST" action="/search_form">
+
+        <label for="search">Search</label>
+        <input type="text" id="search" name="search">
+        <input type="submit" value="Submit">
+    </form>
 </body>
 
 </html>
