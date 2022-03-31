@@ -188,7 +188,7 @@ def logout():
     return flask.redirect(flask.url_for("index"))
 
 
-@app.route("/")
+@app.route("/main")
 @login_required
 def main():
     return flask.render_template(
