@@ -199,6 +199,7 @@ def main():
     )
 
 
+
 @app.route("/teams")
 def teams():
     return flask.render_template("teams.html")
@@ -206,6 +207,7 @@ def teams():
 
 @app.route("/search_form", methods=["POST"])
 def search():
+    pokemon_name = flask.request.form.get("search")
     return flask.render_template("search.html")
 
 
