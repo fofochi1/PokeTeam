@@ -160,21 +160,17 @@ def callback():
         db.session.commit()
 
     # Begin user session by logging the user in
-    login_user(newUser, remember=True)
-    newUser.authenticated = True
+    login_user(newUser)
 
     # Send user back to homepage
     return flask.redirect(flask.url_for("index"))
 
 
 def isUserInDB(userID):
-
-    result = UserDB.query.filter_by(user_id=userID).all()
-
+    result = db.session.query(UserDB.query.filter_by(user_id=userID).exists())
     # if we get a non-empty result from the DB, that means they already exist
     if result:
         return True
-
     return False
 
 
@@ -182,8 +178,6 @@ def isUserInDB(userID):
 @login_required
 def logout():
     # logout the current user with flask login and redirect to main page
-    user = current_user
-    user.authenticated = False
     logout_user()
     return flask.redirect(flask.url_for("index"))
 
@@ -197,7 +191,6 @@ def main():
         user_email=current_user.email,
         user_pic=current_user.pic,
     )
-
 
 
 @app.route("/teams")
