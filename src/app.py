@@ -2,17 +2,17 @@
 # The above is fine, but I'd prefer that the full names are used for less ambiguity (e.g. "missing-module-docstring")
 # I'd also like for us to have justifications regarding the warnings we disable
 # Python standard libraries
-import json
-import os
-import requests
-import flask
+from os import environ, getenv, urandom
 
-from os import getenv
+import json
+
+import requests
+
 
 # Third party libraries
 from dotenv import load_dotenv, find_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, redirect, request, url_for
+from flask import Flask, redirect, render_template, request, url_for
 from flask_login import (
     LoginManager,
     current_user,
@@ -28,7 +28,7 @@ PORT = int(getenv("PORT", "8080"))
 
 load_dotenv(find_dotenv())
 
-app = flask.Flask(__name__)
+app = Flask(__name__)
 
 # initialize items needed for flask-login
 login_manager = LoginManager()
@@ -36,8 +36,8 @@ login_manager.login_view = "login"
 login_manager.init_app(app)
 
 # Configuration
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", None)
+GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
+GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET", None)
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 # OAuth2 client setup
@@ -48,22 +48,22 @@ def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
+environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
     app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
         "SQLALCHEMY_DATABASE_URI"
     ].replace("postgres://", "postgresql://")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-app.secret_key = os.urandom(16)
-# app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+app.secret_key = urandom(16)
+# app.secret_key = environ.get("SECRET_KEY") or urandom(24)
 
 db = SQLAlchemy(app)
-from models import *
+from modules.models import *
 
 db.create_all()
 
@@ -83,8 +83,8 @@ def unauthorized():
 def index():
     # will redirect the user to the appropriate page according to if they are logged in
     if current_user.is_authenticated:
-        return flask.redirect(flask.url_for("main"))
-    return flask.redirect(flask.url_for("login"))
+        return redirect(url_for("main"))
+    return redirect(url_for("login"))
 
 
 @app.route("/login_request")
@@ -105,7 +105,7 @@ def login_request():
 
 @app.route("/login")
 def login():
-    return flask.render_template("login.html")
+    return render_template("login.html")
 
 
 @app.route("/login_request/callback")
@@ -163,7 +163,7 @@ def callback():
     login_user(newUser)
 
     # Send user back to homepage
-    return flask.redirect(flask.url_for("index"))
+    return redirect(url_for("index"))
 
 
 def isUserInDB(userID):
@@ -179,13 +179,13 @@ def isUserInDB(userID):
 def logout():
     # logout the current user with flask login and redirect to main page
     logout_user()
-    return flask.redirect(flask.url_for("index"))
+    return redirect(url_for("index"))
 
 
 @app.route("/main")
 @login_required
 def main():
-    return flask.render_template(
+    return render_template(
         "index.html",
         user_name=current_user.name,
         user_email=current_user.email,
@@ -195,13 +195,13 @@ def main():
 
 @app.route("/teams")
 def teams():
-    return flask.render_template("teams.html")
+    return render_template("teams.html")
 
 
 @app.route("/search_form", methods=["POST"])
 def search():
-    pokemon_name = flask.request.form.get("search")
-    return flask.render_template("search.html")
+    pokemon_name = request.form.get("search")
+    return render_template("search.html")
 
 
 # app.run(debug=True, host=HOST, port=PORT)
