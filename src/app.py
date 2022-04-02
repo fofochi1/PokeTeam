@@ -200,8 +200,13 @@ def teams():
 
 @app.route("/search_form", methods=["POST", "GET"])
 def search():
+    """
+    This function reveives input name from search form. Calls API and gets image,
+    id and moves list.
+    """
     pokemon_name = request.form.get("search")
-    response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon_name + "/")
+    pokemon = pokemon_name.lower()
+    response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
     data = response.json()
     headlines = {"name": "", "id": "", "image": "", "moves": []}
     headlines.update({"name": data["name"]})
@@ -215,7 +220,7 @@ def search():
     return render_template(
         "search.html",
         headlines=headlines,
-        pokemon_name=pokemon_name,
+        pokemon_name=pokemon,
         length=length_of_moves,
     )
 
