@@ -62,16 +62,18 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = urandom(16)
 # app.secret_key = environ.get("SECRET_KEY") or urandom(24)
 
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 from modules.models import *
 
-db.create_all()
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 
 @login_manager.user_loader
 def load_user(user_id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return UserDB.query.get(int(user_id))
+    return User.query.get(int(user_id))
 
 
 @login_manager.unauthorized_handler
@@ -153,7 +155,7 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    newUser = UserDB(user_id=unique_id, email=users_email, name=users_name, pic=picture)
+    newUser = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
     if isUserInDB(unique_id) == False:
         # if not add them to db
         db.session.add(newUser)
@@ -167,7 +169,7 @@ def callback():
 
 
 def isUserInDB(userID):
-    result = db.session.query(UserDB.query.filter_by(user_id=userID).exists())
+    result = db.session.query(User.query.filter_by(user_id=userID).exists())
     # if we get a non-empty result from the DB, that means they already exist
     if result:
         return True

@@ -32,7 +32,7 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f"<User_id = {self.user_id}, Email = {self.email}, Name = {self.name}, Pic = {self.pic}>"
 
-    # these functions are predefined by the
+    # these functions are predefined by the UserMixin class that's being inherited
     # def get_id(self):
     #     """Return the id from the username."""
     #     return self.user_id
