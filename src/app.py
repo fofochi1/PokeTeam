@@ -200,10 +200,26 @@ def teams():
     return render_template("teams.html")
 
 
-@app.route("/search_form", methods=["POST"])
+@app.route("/search_form", methods=["POST", "GET"])
 def search():
     pokemon_name = request.form.get("search")
-    return render_template("search.html")
+    response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon_name + "/")
+    data = response.json()
+    headlines = {"name": "", "id": "", "image": "", "moves": []}
+    headlines.update({"name": data["name"]})
+    headlines.update({"id": data["id"]})
+    headlines.update({"image": data["sprites"]["front_shiny"]})
+    length_of_moves = len(data["moves"])
+    list_of_moves = []
+    for i in range(length_of_moves):
+        list_of_moves.append(data["moves"][i]["move"]["name"])
+    headlines.update({"moves": list_of_moves})
+    return render_template(
+        "search.html",
+        headlines=headlines,
+        pokemon_name=pokemon_name,
+        length=length_of_moves,
+    )
 
 
 # app.run(debug=True, host=HOST, port=PORT)
