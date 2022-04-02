@@ -212,7 +212,6 @@ def search():
     for i in range(length_of_moves):
         list_of_moves.append(data["moves"][i]["move"]["name"])
     headlines.update({"moves": list_of_moves})
-    print(list_of_moves)
     return render_template(
         "search.html",
         headlines=headlines,
