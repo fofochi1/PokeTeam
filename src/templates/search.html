@@ -1,7 +1,20 @@
 <html>
 
 <body>
-    <h1>Placeholder for the search results</h1>
+    <h1>{{headlines["name"]}}</h1>
+    <img src="{{headlines['image']}}" alt="">
+    <h3>List of Moves</h3>
+    {% for n in range(length) %}
+    <p>{{headlines["moves"][n]}}</p>
+    {% endfor %}
+    <br>
+    <h3>Search for a Pokemon</h3>
+    <form method="POST" action="/search_form">
+
+        <label for="search">Search</label>
+        <input type="text" id="search" name="search">
+        <input type="submit" value="Submit">
+    </form>
 </body>
 
 </html>
