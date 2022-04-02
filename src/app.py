@@ -85,7 +85,9 @@ def unauthorized():
 def index():
     # will redirect the user to the appropriate page according to if they are logged in
     if current_user.is_authenticated:
+        print("You may pass")
         return redirect(url_for("main"))
+    print("You may not pass")
     return redirect(url_for("login"))
 
 
@@ -107,6 +109,7 @@ def login_request():
 
 @app.route("/login")
 def login():
+    print("Yay, logging in")
     return render_template("login.html")
 
 
@@ -156,24 +159,18 @@ def callback():
         return "User email not available or not verified by Google.", 400
 
     newUser = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
-    if isUserInDB(unique_id) == False:
+    if not User.query.get(int(unique_id)):
+        print("Adding a new user")
         # if not add them to db
         db.session.add(newUser)
         db.session.commit()
 
     # Begin user session by logging the user in
+    print("Already a saved user")
     login_user(newUser)
 
     # Send user back to homepage
     return redirect(url_for("index"))
-
-
-def isUserInDB(userID):
-    result = db.session.query(User.query.filter_by(user_id=userID).exists())
-    # if we get a non-empty result from the DB, that means they already exist
-    if result:
-        return True
-    return False
 
 
 @app.route("/logout")
