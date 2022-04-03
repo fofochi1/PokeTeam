@@ -21,7 +21,8 @@ db = SQLAlchemy()
 class User(UserMixin, db.Model):
     __tablename__ = "User"
     # primary key should be an integer for auto-increment; changed the name to remove redundancy
-    id = db.Column(db.Integer, primary_key=True)
+    # The primary key should be a float, an integer key is not able to store the google id# properly
+    user_id = db.Column(db.Float, primary_key=True)
     # changed email max length in accordance with Gmail's (6-30 character username)
     # since users can only log in with Google, storing "@gmail.com" is unnecessary
     email = db.Column(db.String(30))
@@ -33,9 +34,9 @@ class User(UserMixin, db.Model):
         return f"<User_id = {self.user_id}, Email = {self.email}, Name = {self.name}, Pic = {self.pic}>"
 
     # these functions are predefined by the UserMixin class that's being inherited
-    # def get_id(self):
-    #     """Return the id from the username."""
-    #     return self.user_id
+    def get_id(self):
+        """Return the id from the username."""
+        return self.user_id
 
     # def is_active(self):
     #     """True, as all users are active."""
@@ -71,4 +72,3 @@ class Pokemon(db.Model):
     # species ID could be national dex number, for example
     species = db.Column(db.String(20))
     ability = db.Column(db.String(20))
-
