@@ -56,11 +56,7 @@ if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
     app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
         "SQLALCHEMY_DATABASE_URI"
     ].replace("postgres://", "postgresql://")
-
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = urandom(16)
-# app.secret_key = environ.get("SECRET_KEY") or urandom(24)
 
 # db = SQLAlchemy(app)
 from modules.models import *
