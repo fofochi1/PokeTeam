@@ -220,8 +220,8 @@ def search():
     )
 
 
-# app.run(debug=True, host=HOST, port=PORT)
+app.run(debug=True, host=HOST, port=PORT)
 
 # The app.run I was using to test google authorization
-if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+# if __name__ == "__main__":
+#     app.run(ssl_context="adhoc")
