@@ -31,7 +31,7 @@ class User(UserMixin, db.Model):
     pic = db.Column(db.String(120))
 
     def __repr__(self):
-        return f"<User_id = {self.user_id}, Email = {self.email}, Name = {self.name}, Pic = {self.pic}>"
+        return "<User_id = {self.user_id}, Email = {self.email}, Name = {self.name}, Pic = {self.pic}>"
 
     # these functions are predefined by the UserMixin class that's being inherited
     def get_id(self):

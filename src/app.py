@@ -10,8 +10,6 @@ import requests
 
 
 # Third party libraries
-from dotenv import load_dotenv, find_dotenv
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import (
     LoginManager,
@@ -21,12 +19,12 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
+from modules.env import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_DISCOVERY_URL
+from modules.models import *
 
 # Just for testing deployment; I used a separate file to fetch all env variables and imported them in other files for convenience
 HOST = getenv("IP", "0.0.0.0")
 PORT = int(getenv("PORT", "8080"))
-
-load_dotenv(find_dotenv())
 
 app = Flask(__name__)
 
@@ -35,10 +33,6 @@ login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
 
-# Configuration
-GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET", None)
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 # OAuth2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
@@ -59,7 +53,6 @@ if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
 app.secret_key = urandom(16)
 
 # db = SQLAlchemy(app)
-from modules.models import *
 
 db.init_app(app)
 with app.app_context():
@@ -154,16 +147,16 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    newUser = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
+    new_user = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
     if not User.query.get(int(unique_id)):
         print("Adding a new user")
         # if not add them to db
-        db.session.add(newUser)
+        db.session.add(new_user)
         db.session.commit()
 
     # Begin user session by logging the user in
     print("Already a saved user")
-    login_user(newUser)
+    login_user(new_user)
 
     # Send user back to homepage
     return redirect(url_for("index"))
@@ -227,7 +220,6 @@ def search():
         )
 
 
-# For heroku deployment, use this when pushing to github
 app.run(debug=True, host=HOST, port=PORT)
 
 # Use this when testing locally
