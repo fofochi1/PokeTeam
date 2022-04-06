@@ -12,7 +12,7 @@ import requests
 # Third party libraries
 from dotenv import load_dotenv, find_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import (
     LoginManager,
     current_user,
@@ -202,26 +202,35 @@ def search():
     pokemon_name = request.form.get("search")
     pokemon = pokemon_name.lower()
     response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
-    data = response.json()
-    headlines = {"name": "", "id": "", "image": "", "moves": []}
-    headlines.update({"name": data["name"]})
-    headlines.update({"id": data["id"]})
-    headlines.update({"image": data["sprites"]["front_shiny"]})
-    length_of_moves = len(data["moves"])
-    list_of_moves = []
-    for i in range(length_of_moves):
-        list_of_moves.append(data["moves"][i]["move"]["name"])
-    headlines.update({"moves": list_of_moves})
-    return render_template(
-        "search.html",
-        headlines=headlines,
-        pokemon_name=pokemon,
-        length=length_of_moves,
-    )
+
+    #checking to see that pokemon exists in API
+    if response.status_code == 404:
+        flash("That pokemon does not exist. Please try again!")
+        return redirect(url_for("main"))
+
+    else:
+        data = response.json()
+        headlines = {"name": "", "id": "", "image": "", "moves": []}
+        headlines.update({"name": data["name"]})
+        headlines.update({"id": data["id"]})
+        headlines.update({"image": data["sprites"]["front_shiny"]})
+        length_of_moves = len(data["moves"])
+        list_of_moves = []
+        for i in range(length_of_moves):
+            list_of_moves.append(data["moves"][i]["move"]["name"])
+        headlines.update({"moves": list_of_moves})
+        return render_template(
+            "search.html",
+            headlines=headlines,
+            pokemon_name=pokemon,
+            length=length_of_moves,
+        )
 
 
-app.run(debug=True, host=HOST, port=PORT)
+# For heroku deployment, use this when pushing to github
+# app.run(debug=True, host=HOST, port=PORT)
 
+# Use this when testing locally
 # The app.run I was using to test google authorization
-# if __name__ == "__main__":
-#     app.run(ssl_context="adhoc")
+if __name__ == "__main__":
+    app.run(ssl_context="adhoc")

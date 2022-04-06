@@ -20,11 +20,11 @@ Place DATABASE_URL inside .env file.
 Place a created SECRET_KEY inside .env file.
 
 #### Heroku Link
-https://glacial-peak-48220.herokuapp.com/
+https://hidden-ravine-50807.herokuapp.com/
 
 
 # Alfonso Buzeta Borquez
-# Bryan Williams
-# Erich Burch
+# Brian Williams
+# Eric Burch
 # Ivan Garcia
 ## SWE Section 002
