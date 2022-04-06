@@ -203,7 +203,7 @@ def search():
     pokemon = pokemon_name.lower()
     response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
 
-    #checking to see that pokemon exists in API
+    # checking to see that pokemon exists in API
     if response.status_code == 404:
         flash("That pokemon does not exist. Please try again!")
         return redirect(url_for("main"))
@@ -228,9 +228,9 @@ def search():
 
 
 # For heroku deployment, use this when pushing to github
-# app.run(debug=True, host=HOST, port=PORT)
+app.run(debug=True, host=HOST, port=PORT)
 
 # Use this when testing locally
 # The app.run I was using to test google authorization
-if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+# if __name__ == "__main__":
+#     app.run(ssl_context="adhoc")
