@@ -147,7 +147,7 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    new_user = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
+    new_user = User(id=unique_id, email=users_email, name=users_name, pic=picture)
     if not User.query.get(int(unique_id)):
         print("Adding a new user")
         # if not add them to db
