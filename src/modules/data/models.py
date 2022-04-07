@@ -24,6 +24,10 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return "<id = {self.id}, email = {self.email}, Name = {self.name}, Pic = {self.pic}>"
 
+    def get_id(self):
+        """Return the id from the username."""
+        return self.id
+
 
 class Team(db.Model):
     __tablename__ = "Team"

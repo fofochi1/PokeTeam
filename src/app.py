@@ -58,9 +58,9 @@ with app.app_context():
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(user_id))
+    return User.query.get(int(id))
 
 
 @login_manager.unauthorized_handler
@@ -221,5 +221,5 @@ def search():
 # Use this when testing locally
 # The app.run I was using to test google authorization
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(ssl_context="adhoc") # for local use only
+    # app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    app.run(ssl_context="adhoc")  # for local use only
