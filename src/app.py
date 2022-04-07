@@ -221,5 +221,5 @@ def search():
 # Use this when testing locally
 # The app.run I was using to test google authorization
 if __name__ == "__main__":
-    # app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    app.run(ssl_context="adhoc")  # for local use only
+    app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    # app.run(ssl_context="adhoc")  # for local use only
