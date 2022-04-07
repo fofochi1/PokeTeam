@@ -2,7 +2,7 @@
 # The above is fine, but I'd prefer that the full names are used for less ambiguity (e.g. "missing-module-docstring")
 # I'd also like for us to have justifications regarding the warnings we disable
 # Python standard libraries
-from os import environ, getenv, urandom
+from os import environ, urandom
 
 import json
 
@@ -19,12 +19,16 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
-from modules.env import GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_DISCOVERY_URL
-from modules.models import *
+from .modules.data.env import (
+    DATABASE_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_DISCOVERY_URL,
+    HOST,
+    PORT,
+)
+from .modules.data.models import *
 
-# Just for testing deployment; I used a separate file to fetch all env variables and imported them in other files for convenience
-HOST = getenv("IP", "0.0.0.0")
-PORT = int(getenv("PORT", "8080"))
 
 app = Flask(__name__)
 
@@ -44,15 +48,9 @@ def get_google_provider_cfg():
 
 environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-    app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ].replace("postgres://", "postgresql://")
 app.secret_key = urandom(16)
-
-# db = SQLAlchemy(app)
 
 db.init_app(app)
 with app.app_context():
@@ -220,9 +218,8 @@ def search():
         )
 
 
-app.run(debug=True, host=HOST, port=PORT)
-
 # Use this when testing locally
 # The app.run I was using to test google authorization
-# if __name__ == "__main__":
-#     app.run(ssl_context="adhoc")
+if __name__ == "__main__":
+    app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    # app.run(ssl_context="adhoc") # for local use only

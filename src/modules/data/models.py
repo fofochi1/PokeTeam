@@ -9,19 +9,13 @@ no-member: pylint doesn't seem to like "db.*"
 from flask_login import UserMixin
 from flask_sqlalchemy import SQLAlchemy
 
-# since the models are in a separate file, they should be imported, along with db
-# from app import db
-
 db = SQLAlchemy()
 
 
 class User(UserMixin, db.Model):
     __tablename__ = "User"
-    # primary key should be an integer for auto-increment; changed the name to remove redundancy
     # The primary key should be a float, an integer key is not able to store the google id# properly
     id = db.Column(db.Float, primary_key=True)
-    # changed email max length in accordance with Gmail's (6-30 character username)
-    # since users can only log in with Google, storing "@gmail.com" is unnecessary
     email = db.Column(db.String(30))
     # do we really need to store names? we could just use the google username
     name = db.Column(db.String(100))
