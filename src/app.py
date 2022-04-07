@@ -19,7 +19,7 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
-from .modules.data.env import (
+from modules.data.env import (
     DATABASE_URL,
     GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET,
@@ -27,7 +27,7 @@ from .modules.data.env import (
     HOST,
     PORT,
 )
-from .modules.data.models import *
+from modules.data.models import *
 
 
 app = Flask(__name__)
