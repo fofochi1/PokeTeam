@@ -2,11 +2,25 @@
 
 <body>
     <h1>{{headlines["name"]}}</h1>
+
+    <form action="/add_pokemon_to_team/{{headlines['id']}}" method="GET">
+        <!-- <input type="hidden" name="pokemon" id="pokemon" value="{{headlines['id']}}"> -->
+        <input type="submit" value="Add to your team">
+    </form>
+
     <img src="{{headlines['image']}}" alt="{{headlines['name']}}">
+
     <h3>List of Moves</h3>
     {% for n in range(length) %}
-    <p>{{headlines["moves"][n]}}</p>
+    <form action="/send_move_to_database/{{headlines['moves_id'][n]}}/" method="GET">
+        <!--  
+        <input type="hidden" name="move" id="move" value="{{headlines['moves'][n]}}">
+        <input type="hidden" name="pokemon" id="pokemon" value="{{headlines['name']}}">
+        -->
+        <input type="submit" value="{{headlines['moves'][n]}}">
+    </form>
     {% endfor %}
+
     <br>
     <h3>Search for a Pokemon</h3>
     <form method="POST" action="/search_form">
