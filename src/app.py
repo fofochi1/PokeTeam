@@ -4,7 +4,8 @@ Disabled Pylint Warnings & Justifications:
 missing-function-docstring: useful, but not necessary (maybe for polishing phase)
 no-member: pylint doesn't seem to like "db.*"
 unused-wildcard-import: the imports are being used, just not explicitly
-wildcard-import: using the wildcard is convenient (main file doesn't change even if models file does)
+wildcard-import: using the wildcard is convenient 
+(main file doesn't change even if models file does)
 """
 
 # I'd also like for us to have justifications regarding the warnings we disable
@@ -64,10 +65,11 @@ with app.app_context():
     db.create_all()
 
 
+# changed id to id_number to fix pylint error
 @login_manager.user_loader
-def load_user(id):
+def load_user(id_number):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(id))
+    return User.query.get(int(id_number))
 
 
 @login_manager.unauthorized_handler
@@ -227,9 +229,10 @@ def search():
     )
 
 
+# changed id to species_number to fix pylint error
 @app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
-def add_pokemon_to_team(id):
-    pokemon = Pokemon(species_no=id, owner=current_user.id)
+def add_pokemon_to_team(species_number):
+    pokemon = Pokemon(species_no=species_number, owner=current_user.id)
     db.session.add(pokemon)
     team = Team.query.filter_by(owner=current_user.id).first()
     add_pokemon = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
@@ -244,7 +247,6 @@ def create_team():
     print(team.owner)
     db.session.add(team)
     db.session.commit()
-
     return render_template("teams.html")
 
 
