@@ -1,4 +1,4 @@
-# pylint: disable = missing-function-docstring
+# pylint: disable = missing-function-docstring, missing-module-docstring
 # import unittest
 
 from sqlalchemy import null
