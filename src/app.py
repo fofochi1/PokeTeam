@@ -1,8 +1,16 @@
-# pylint: disable= C0114, C0115, C0116, E1101
-# The above is fine, but I'd prefer that the full names are used for less ambiguity (e.g. "missing-module-docstring")
+# pylint: disable = missing-function-docstring, no-member, unused-wildcard-import, wildcard-import
+"""
+Disabled Pylint Warnings & Justifications:
+missing-function-docstring: useful, but not necessary (maybe for polishing phase)
+no-member: pylint doesn't seem to like "db.*"
+unused-wildcard-import: the imports are being used, just not explicitly
+wildcard-import: using the wildcard is convenient
+(main file doesn't change even if models file does)
+"""
+
 # I'd also like for us to have justifications regarding the warnings we disable
 # Python standard libraries
-from os import environ, getenv, urandom
+from os import environ, urandom
 
 import json
 
@@ -10,8 +18,6 @@ import requests
 
 
 # Third party libraries
-from dotenv import load_dotenv, find_dotenv
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, flash, redirect, render_template, request, url_for
 from flask_login import (
     LoginManager,
@@ -21,12 +27,16 @@ from flask_login import (
     logout_user,
 )
 from oauthlib.oauth2 import WebApplicationClient
+from modules.data.env import (
+    DATABASE_URL,
+    GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET,
+    GOOGLE_DISCOVERY_URL,
+    HOST,
+    PORT,
+)
+from modules.data.models import *
 
-# Just for testing deployment; I used a separate file to fetch all env variables and imported them in other files for convenience
-HOST = getenv("IP", "0.0.0.0")
-PORT = int(getenv("PORT", "8080"))
-
-load_dotenv(find_dotenv())
 
 app = Flask(__name__)
 
@@ -35,10 +45,6 @@ login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
 
-# Configuration
-GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID", None)
-GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET", None)
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 # OAuth2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
@@ -50,26 +56,20 @@ def get_google_provider_cfg():
 
 environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-if app.config["SQLALCHEMY_DATABASE_URI"].startswith("postgres://"):
-    app.config["SQLALCHEMY_DATABASE_URI"] = app.config[
-        "SQLALCHEMY_DATABASE_URI"
-    ].replace("postgres://", "postgresql://")
 app.secret_key = urandom(16)
-
-# db = SQLAlchemy(app)
-from modules.models import *
 
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
 
+# changed id to id_number to fix pylint error
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(id_number):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(user_id))
+    return User.query.get(int(id_number))
 
 
 @login_manager.unauthorized_handler
@@ -147,23 +147,23 @@ def callback():
     # The user authenticated with Google, authorized our
     # app, and now we've verified their email through Google!
     if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
     else:
         return "User email not available or not verified by Google.", 400
 
-    newUser = User(user_id=unique_id, email=users_email, name=users_name, pic=picture)
-    if not User.query.get(int(unique_id)):
+    user = User.query.filter_by(email=users_email).first()
+    if user is None:
+        user = User(email=users_email, name=users_name, pic=picture)
         print("Adding a new user")
         # if not add them to db
-        db.session.add(newUser)
+        db.session.add(user)
         db.session.commit()
 
     # Begin user session by logging the user in
     print("Already a saved user")
-    login_user(newUser)
+    login_user(user)
 
     # Send user back to homepage
     return redirect(url_for("index"))
@@ -224,30 +224,26 @@ def search():
     if code == 404:
         flash("That pokemon does not exist. Please try again!")
         return redirect(url_for("main"))
-
-    else:
-        data = response.json()
-        headlines = {"name": "", "id": "", "image": "", "moves": [], "moves_id": []}
-        headlines.update({"name": data["name"]})
-        headlines.update({"id": data["id"]})
-        headlines.update({"image": data["sprites"]["front_shiny"]})
-        length_of_moves = len(data["moves"])
-        list_of_moves = []
-        list_of_moves_id = []
-        for i in range(length_of_moves):
-            list_of_moves.append(data["moves"][i]["move"]["name"])
-            url = data["moves"][i]["move"]["url"]
-            split_url = url.split("/")
-            move_id = split_url[6]
-            list_of_moves_id.append(move_id)
-        headlines.update({"moves": list_of_moves})
-        headlines.update({"moves_id": list_of_moves_id})
-        return render_template(
-            "search.html",
-            headlines=headlines,
-            pokemon_name=pokemon,
-            length=length_of_moves,
-        )
+      
+    data = response.json()
+    headlines = {"name": "", "id": "", "image": "", "moves": [], "moves_id": []}
+    headlines.update({"name": data["name"]})
+    headlines.update({"id": data["id"]})
+    headlines.update({"image": data["sprites"]["front_shiny"]})
+    length_of_moves = len(data["moves"])
+    list_of_moves = []
+    list_of_moves_id = []
+    for i in range(length_of_moves):
+        list_of_moves.append(data["moves"][i]["move"]["name"])
+        url = data["moves"][i]["move"]["url"]
+        split_url = url.split("/")
+        move_id = split_url[6]
+        list_of_moves_id.append(move_id)
+    headlines.update({"moves": list_of_moves})
+    headlines.update({"moves_id": list_of_moves_id})
+    return render_template(
+        "search.html", headlines=headlines, pokemon_name=pokemon, length=length_of_moves
+    )
 
 
 # changed id to species_number to fix pylint error
@@ -271,10 +267,6 @@ def create_team():
     return render_template("teams.html")
 
 
-# For heroku deployment, use this when pushing to github
-app.run(debug=True, host=HOST, port=PORT)
-
-# Use this when testing locally
-# The app.run I was using to test google authorization
-# if __name__ == "__main__":
-#     app.run(ssl_context="adhoc")
+if __name__ == "__main__":
+    app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    # app.run(debug=True, ssl_context="adhoc")  # for local use only

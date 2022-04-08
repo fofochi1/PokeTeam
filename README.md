@@ -1,7 +1,7 @@
 # Name
 The Pokedex
 
-#### Heroku Link
+## Heroku Link
 https://hidden-ravine-50807.herokuapp.com/
 
 ## Description
@@ -21,9 +21,6 @@ You will need a Google Client Id and a Google Client Secret to be able to use Go
 Installations needed are Flask, requests, dotenv, sqlalchemy, oauthlib, pyOpenSSL
 Place DATABASE_URL inside .env file.
 Place a created SECRET_KEY inside .env file.
-
-
-
 
 # Alfonso Buzeta Borquez
 # Brian Williams
