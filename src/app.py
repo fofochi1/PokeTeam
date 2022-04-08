@@ -65,11 +65,24 @@ with app.app_context():
     db.create_all()
 
 
-# changed id to id_number to fix pylint error
+def get_pokemon_url(name):
+    """
+    Creates url for API call
+    """
+    base_url = "https://pokeapi.co/api/v2/pokemon/"
+    url = base_url + name + "/"
+    return url
+
+
+def check_api_status_call(response):
+    code = response.status_code
+    return code
+
+
 @login_manager.user_loader
-def load_user(id_number):
+def load_user(user_id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(id_number))
+    return User.query.get(int(user_id))
 
 
 @login_manager.unauthorized_handler
@@ -188,83 +201,86 @@ def main():
     )
 
 
-@app.route("/teams")
+@app.route("/teams", methods=["GET", "POST"])
 def teams():
-    return render_template("teams.html")
+    data = {"team": None, "pokemon_list": None}
+    team = Team.query.filter_by(owner=current_user.id).first()
+    pokemon_list = None
+    if team is not None:
+
+        def mapper(entry):
+            pokemon = entry[0]
+            response = requests.get(
+                f"https://pokeapi.co/api/v2/pokemon/{pokemon.species_no}"
+            ).json()
+            setattr(pokemon, "image", response["sprites"]["front_default"])
+            return pokemon
+
+        query_result = (
+            db.session.query(Pokemon, TeamHasPokemon)
+            .filter(TeamHasPokemon.team == team.id)
+            .filter(TeamHasPokemon.pokemon == Pokemon.id)
+            .all()
+        )
+        pokemon_list = list(map(mapper, query_result))
+
+    data["team"] = team
+    data["pokemon_list"] = pokemon_list
+    return render_template("teams.html", data=data)
 
 
-def get_pokemon_url(name):
-    """
-    Creates url for API call
-    """
-    base_url = "https://pokeapi.co/api/v2/pokemon/"
-    url = base_url + name + "/"
-    return url
-
-
-def check_api_status_call(response):
-    code = response.status_code
-    return code
-
-
-@app.route("/search_form", methods=["POST", "GET"])
+@app.route("/search", methods=["GET", "POST"])
 def search():
     """
     This function reveives input name from search form. Calls API and gets image,
     id and moves list.
     """
-    pokemon_name = request.form.get("search")
-    pokemon = pokemon_name.lower()
-    url = get_pokemon_url(pokemon)
-    response = requests.get(url)
-    # response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
+    data = None
+    if request.method == "POST":
+        search_term = request.form["search_term"].lower()
+        url = get_pokemon_url(search_term)
+        response = requests.get(url)
+        if response.status_code == 404:
+            flash("A Pokemon with that name (or ID) could not be found.")
+            return redirect(url_for("search"))
+        response = response.json()
 
-    # checking to see that pokemon exists in API
-    code = check_api_status_call(response)
-    if code == 404:
-        flash("That pokemon does not exist. Please try again!")
-        return redirect(url_for("main"))
-      
-    data = response.json()
-    headlines = {"name": "", "id": "", "image": "", "moves": [], "moves_id": []}
-    headlines.update({"name": data["name"]})
-    headlines.update({"id": data["id"]})
-    headlines.update({"image": data["sprites"]["front_shiny"]})
-    length_of_moves = len(data["moves"])
-    list_of_moves = []
-    list_of_moves_id = []
-    for i in range(length_of_moves):
-        list_of_moves.append(data["moves"][i]["move"]["name"])
-        url = data["moves"][i]["move"]["url"]
-        split_url = url.split("/")
-        move_id = split_url[6]
-        list_of_moves_id.append(move_id)
-    headlines.update({"moves": list_of_moves})
-    headlines.update({"moves_id": list_of_moves_id})
-    return render_template(
-        "search.html", headlines=headlines, pokemon_name=pokemon, length=length_of_moves
-    )
+        def mapper(move_wrapper):
+            move_wrapper = move_wrapper["move"]
+            move = {
+                "name": move_wrapper["name"],
+                "id": move_wrapper["url"].split("/")[-2],
+            }
+            return move
+
+        data = {
+            "name": response["name"],
+            "species_no": response["id"],
+            "image": response["sprites"]["front_default"],
+            "moves": list(map(mapper, response["moves"])),
+        }
+
+    return render_template("search.html", data=data)
 
 
-# changed id to species_number to fix pylint error
-@app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
-def add_pokemon_to_team(species_number):
-    pokemon = Pokemon(species_no=species_number, owner=current_user.id)
+@app.route("/add_pokemon/<species_no>", methods=["POST"])
+def add_pokemon(species_no):
+    pokemon = Pokemon(species_no=species_no, owner=current_user.id)
+
     db.session.add(pokemon)
     team = Team.query.filter_by(owner=current_user.id).first()
-    add_pokemon = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
-    db.session.add(add_pokemon)
+    team_pokemon_record = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
+    db.session.add(team_pokemon_record)
     db.session.commit()
-    return render_template("teams.html")
+    return redirect(url_for("teams"))
 
 
 @app.route("/create_team", methods=["POST"])
 def create_team():
     team = Team(name="My Team", owner=current_user.id)
-    print(team.owner)
     db.session.add(team)
     db.session.commit()
-    return render_template("teams.html")
+    return redirect(url_for("teams"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,21 @@
+.team {
+    width: 380px;
+}
+
+.team-grid {
+    background-color: darkgrey;
+
+    height: 240px;
+
+    display: grid;
+    grid-template-columns: auto auto auto;
+
+    grid-gap: 10px;
+    padding: 10px;
+}
+
+.square {
+    background-color: gray;
+    width: 100px;
+    height: 100px;
+}
