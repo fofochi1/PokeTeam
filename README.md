@@ -1,8 +1,8 @@
-#### Heroku Link
-https://hidden-ravine-50807.herokuapp.com/
-
 # Name
 The Pokedex
+
+#### Heroku Link
+https://hidden-ravine-50807.herokuapp.com/
 
 ## Description
 This app gathers details from a Pokemon API. You are able to create your own team, look at details of a pokemon. You create your account by signing in with Google

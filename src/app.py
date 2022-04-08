@@ -250,10 +250,31 @@ def search():
         )
 
 
+# changed id to species_number to fix pylint error
+@app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
+def add_pokemon_to_team(species_number):
+    pokemon = Pokemon(species_no=species_number, owner=current_user.id)
+    db.session.add(pokemon)
+    team = Team.query.filter_by(owner=current_user.id).first()
+    add_pokemon = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
+    db.session.add(add_pokemon)
+    db.session.commit()
+    return render_template("teams.html")
+
+
+@app.route("/create_team", methods=["POST"])
+def create_team():
+    team = Team(name="My Team", owner=current_user.id)
+    print(team.owner)
+    db.session.add(team)
+    db.session.commit()
+    return render_template("teams.html")
+
+
 # For heroku deployment, use this when pushing to github
-# app.run(debug=True, host=HOST, port=PORT)
+app.run(debug=True, host=HOST, port=PORT)
 
 # Use this when testing locally
 # The app.run I was using to test google authorization
-if __name__ == "__main__":
-    app.run(ssl_context="adhoc")
+# if __name__ == "__main__":
+#     app.run(ssl_context="adhoc")
