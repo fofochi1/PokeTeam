@@ -206,29 +206,25 @@ def search():
         flash("That pokemon does not exist. Please try again!")
         return redirect(url_for("main"))
 
-    else:
-        data = response.json()
-        headlines = {"name": "", "id": "", "image": "", "moves": [], "moves_id": []}
-        headlines.update({"name": data["name"]})
-        headlines.update({"id": data["id"]})
-        headlines.update({"image": data["sprites"]["front_shiny"]})
-        length_of_moves = len(data["moves"])
-        list_of_moves = []
-        list_of_moves_id = []
-        for i in range(length_of_moves):
-            list_of_moves.append(data["moves"][i]["move"]["name"])
-            url = data["moves"][i]["move"]["url"]
-            split_url = url.split("/")
-            move_id = split_url[6]
-            list_of_moves_id.append(move_id)
-        headlines.update({"moves": list_of_moves})
-        headlines.update({"moves_id": list_of_moves_id})
-        return render_template(
-            "search.html",
-            headlines=headlines,
-            pokemon_name=pokemon,
-            length=length_of_moves,
-        )
+    data = response.json()
+    headlines = {"name": "", "id": "", "image": "", "moves": [], "moves_id": []}
+    headlines.update({"name": data["name"]})
+    headlines.update({"id": data["id"]})
+    headlines.update({"image": data["sprites"]["front_shiny"]})
+    length_of_moves = len(data["moves"])
+    list_of_moves = []
+    list_of_moves_id = []
+    for i in range(length_of_moves):
+        list_of_moves.append(data["moves"][i]["move"]["name"])
+        url = data["moves"][i]["move"]["url"]
+        split_url = url.split("/")
+        move_id = split_url[6]
+        list_of_moves_id.append(move_id)
+    headlines.update({"moves": list_of_moves})
+    headlines.update({"moves_id": list_of_moves_id})
+    return render_template(
+        "search.html", headlines=headlines, pokemon_name=pokemon, length=length_of_moves
+    )
 
 
 @app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
