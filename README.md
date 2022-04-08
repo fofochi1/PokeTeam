@@ -22,7 +22,6 @@ Installations needed are Flask, requests, dotenv, sqlalchemy, oauthlib, pyOpenSS
 Place DATABASE_URL inside .env file.
 Place a created SECRET_KEY inside .env file.
 
-
 # Alfonso Buzeta Borquez
 # Brian Williams
 # Eric Burch
