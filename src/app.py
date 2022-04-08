@@ -229,6 +229,7 @@ def search():
     )
 
 
+# changed id to species_number to fix pylint error
 @app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
 def add_pokemon_to_team(species_number):
     pokemon = Pokemon(species_no=species_number, owner=current_user.id)
