@@ -193,6 +193,20 @@ def teams():
     return render_template("teams.html")
 
 
+def get_pokemon_url(name):
+    """
+    Creates url for API call
+    """
+    base_url = "https://pokeapi.co/api/v2/pokemon/"
+    url = base_url + name + "/"
+    return url
+
+
+def check_api_status_call(response):
+    code = response.status_code
+    return code
+
+
 @app.route("/search_form", methods=["POST", "GET"])
 def search():
     """
@@ -201,10 +215,13 @@ def search():
     """
     pokemon_name = request.form.get("search")
     pokemon = pokemon_name.lower()
-    response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
+    url = get_pokemon_url(pokemon)
+    response = requests.get(url)
+    # response = requests.get("https://pokeapi.co/api/v2/pokemon/" + pokemon + "/")
 
     # checking to see that pokemon exists in API
-    if response.status_code == 404:
+    code = check_api_status_call(response)
+    if code == 404:
         flash("That pokemon does not exist. Please try again!")
         return redirect(url_for("main"))
 
@@ -234,9 +251,9 @@ def search():
 
 
 # For heroku deployment, use this when pushing to github
-app.run(debug=True, host=HOST, port=PORT)
+# app.run(debug=True, host=HOST, port=PORT)
 
 # Use this when testing locally
 # The app.run I was using to test google authorization
-# if __name__ == "__main__":
-#     app.run(ssl_context="adhoc")
+if __name__ == "__main__":
+    app.run(ssl_context="adhoc")

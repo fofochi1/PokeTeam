@@ -1,3 +1,6 @@
+#### Heroku Link
+https://hidden-ravine-50807.herokuapp.com/
+
 # Name
 The Pokedex
 
@@ -19,8 +22,7 @@ Installations needed are Flask, requests, dotenv, sqlalchemy, oauthlib, pyOpenSS
 Place DATABASE_URL inside .env file.
 Place a created SECRET_KEY inside .env file.
 
-#### Heroku Link
-https://hidden-ravine-50807.herokuapp.com/
+
 
 
 # Alfonso Buzeta Borquez
