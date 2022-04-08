@@ -4,7 +4,7 @@ Disabled Pylint Warnings & Justifications:
 missing-function-docstring: useful, but not necessary (maybe for polishing phase)
 no-member: pylint doesn't seem to like "db.*"
 unused-wildcard-import: the imports are being used, just not explicitly
-wildcard-import: using the wildcard is convenient 
+wildcard-import: using the wildcard is convenient
 (main file doesn't change even if models file does)
 """
 
