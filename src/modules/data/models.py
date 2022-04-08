@@ -14,11 +14,9 @@ db = SQLAlchemy()
 
 class User(UserMixin, db.Model):
     __tablename__ = "User"
-    # The primary key should be a float, an integer key is not able to store the google id# properly
-    # Changed id to Integer to use db generated id
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(30))
-    # do we really need to store names? we could just use the google username
+    # do we really need to store names/pics? we could just use the google username
     name = db.Column(db.String(100))
     pic = db.Column(db.String(120))
 
