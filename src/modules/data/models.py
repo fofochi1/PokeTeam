@@ -15,7 +15,8 @@ db = SQLAlchemy()
 class User(UserMixin, db.Model):
     __tablename__ = "User"
     # The primary key should be a float, an integer key is not able to store the google id# properly
-    id = db.Column(db.Float, primary_key=True)
+    # Changed id to Integer to use db generated id
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(30))
     # do we really need to store names? we could just use the google username
     name = db.Column(db.String(100))
@@ -40,7 +41,7 @@ class Team(db.Model):
 class Pokemon(db.Model):
     __tablename__ = "Pokemon"
     id = db.Column(db.Integer, primary_key=True)
-    owner = db.Column(db.Float, db.ForeignKey("User.id"))
+    owner = db.Column(db.Integer, db.ForeignKey("User.id"))
 
     ability = db.Column(db.Integer, db.ForeignKey("Ability.id"))
     species_no = db.Column(db.Integer)  # National Dex no.

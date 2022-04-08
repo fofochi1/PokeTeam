@@ -138,23 +138,23 @@ def callback():
     # The user authenticated with Google, authorized our
     # app, and now we've verified their email through Google!
     if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
         picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
     else:
         return "User email not available or not verified by Google.", 400
 
-    new_user = User(id=unique_id, email=users_email, name=users_name, pic=picture)
-    if not User.query.get(int(unique_id)):
+    user = User.query.filter_by(email=users_email).first()
+    if user is None:
+        user = User(email=users_email, name=users_name, pic=picture)
         print("Adding a new user")
         # if not add them to db
-        db.session.add(new_user)
+        db.session.add(user)
         db.session.commit()
 
     # Begin user session by logging the user in
     print("Already a saved user")
-    login_user(new_user)
+    login_user(user)
 
     # Send user back to homepage
     return redirect(url_for("index"))
@@ -224,8 +224,29 @@ def search():
         )
 
 
+@app.route("/add_pokemon_to_team/<id>", methods=["POST", "GET"])
+def add_pokemon_to_team(id):
+    pokemon = Pokemon(species_no=id, owner=current_user.id)
+    db.session.add(pokemon)
+    team = Team.query.filter_by(owner=current_user.id).first()
+    add_pokemon = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
+    db.session.add(add_pokemon)
+    db.session.commit()
+    return render_template("teams.html")
+
+
+@app.route("/create_team", methods=["POST"])
+def create_team():
+    team = Team(name="My Team", owner=current_user.id)
+    print(team.owner)
+    db.session.add(team)
+    db.session.commit()
+
+    return render_template("teams.html")
+
+
 # Use this when testing locally
 # The app.run I was using to test google authorization
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(ssl_context="adhoc")  # for local use only
+    # app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    app.run(ssl_context="adhoc", debug=True)  # for local use only
