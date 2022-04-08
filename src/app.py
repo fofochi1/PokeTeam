@@ -4,7 +4,8 @@ Disabled Pylint Warnings & Justifications:
 missing-function-docstring: useful, but not necessary (maybe for polishing phase)
 no-member: pylint doesn't seem to like "db.*"
 unused-wildcard-import: the imports are being used, just not explicitly
-wildcard-import: using the wildcard is convenient (main file doesn't change even if models file does)
+wildcard-import: using the wildcard is convenient
+(main file doesn't change even if models file does)
 """
 
 # I'd also like for us to have justifications regarding the warnings we disable
@@ -64,10 +65,24 @@ with app.app_context():
     db.create_all()
 
 
+def get_pokemon_url(name):
+    """
+    Creates url for API call
+    """
+    base_url = "https://pokeapi.co/api/v2/pokemon/"
+    url = base_url + name + "/"
+    return url
+
+
+def check_api_status_call(response):
+    code = response.status_code
+    return code
+
+
 @login_manager.user_loader
-def load_user(id):
+def load_user(user_id):
     # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(id))
+    return User.query.get(int(user_id))
 
 
 @login_manager.unauthorized_handler
@@ -189,7 +204,6 @@ def main():
 @app.route("/teams", methods=["GET", "POST"])
 def teams():
     data = {"team": None, "pokemon_list": None}
-
     team = Team.query.filter_by(owner=current_user.id).first()
     pokemon_list = None
     if team is not None:
@@ -224,12 +238,13 @@ def search():
     data = None
     if request.method == "POST":
         search_term = request.form["search_term"].lower()
-        response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{search_term}")
+        url = get_pokemon_url(search_term)
+        response = requests.get(url)
         if response.status_code == 404:
             flash("A Pokemon with that name (or ID) could not be found.")
             return redirect(url_for("search"))
         response = response.json()
-        # print(response["moves"])
+
         def mapper(move_wrapper):
             move_wrapper = move_wrapper["move"]
             move = {
@@ -251,6 +266,7 @@ def search():
 @app.route("/add_pokemon/<species_no>", methods=["POST"])
 def add_pokemon(species_no):
     pokemon = Pokemon(species_no=species_no, owner=current_user.id)
+
     db.session.add(pokemon)
     team = Team.query.filter_by(owner=current_user.id).first()
     team_pokemon_record = TeamHasPokemon(team=team.id, pokemon=pokemon.id)
@@ -264,7 +280,6 @@ def create_team():
     team = Team(name="My Team", owner=current_user.id)
     db.session.add(team)
     db.session.commit()
-
     return redirect(url_for("teams"))
 
 

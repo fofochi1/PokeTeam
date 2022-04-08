@@ -1,4 +1,4 @@
-# pylint: disable = missing-class-docstring, no-member
+# pylint: disable = missing-class-docstring, no-member, too-few-public-methods
 """
 Disabled Pylint Warnings & Justifications:
 missing-class-docstring: unnecessary, classes are already straightforward
