@@ -1,5 +1,12 @@
-# pylint: disable= C0114, C0115, C0116, E1101
-# The above is fine, but I'd prefer that the full names are used for less ambiguity (e.g. "missing-module-docstring")
+# pylint: disable = missing-function-docstring, no-member, unused-wildcard-import, wildcard-import
+"""
+Disabled Pylint Warnings & Justifications:
+missing-function-docstring: useful, but not necessary (maybe for polishing phase)
+no-member: pylint doesn't seem to like "db.*"
+unused-wildcard-import: the imports are being used, just not explicitly
+wildcard-import: using the wildcard is convenient (main file doesn't change even if models file does)
+"""
+
 # I'd also like for us to have justifications regarding the warnings we disable
 # Python standard libraries
 from os import environ, urandom
@@ -245,8 +252,6 @@ def create_team():
     return render_template("teams.html")
 
 
-# Use this when testing locally
-# The app.run I was using to test google authorization
 if __name__ == "__main__":
     app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(ssl_context="adhoc", debug=True)  # for local use only
+    # app.run(debug=True, ssl_context="adhoc")  # for local use only
