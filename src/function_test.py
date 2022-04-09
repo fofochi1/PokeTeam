@@ -1,7 +1,9 @@
+# pylint: disable = missing-class-docstring, missing-function-docstring
+
 import unittest
 from app import check_api_status_call
 import requests
-from modules.models import *
+from modules.data.models import *
 
 
 class Testing(unittest.TestCase):
@@ -18,6 +20,7 @@ class Testing(unittest.TestCase):
             data = True
         message = "There is no data."
         self.assertTrue(data, message)
+
 
 if __name__ == "__main__":
     unittest.main()
