@@ -166,9 +166,8 @@ def callback():
     else:
         return "User email not available or not verified by Google.", 400
 
-    user = User.query.filter_by(email=users_email).first()
-    if user is None:
-        user = User(email=users_email, name=users_name, pic=picture)
+    user = User(email=users_email, name=users_name, pic=picture)
+    if not is_user_in_db(users_email):
         print("Adding a new user")
         # if not add them to db
         db.session.add(user)
@@ -180,6 +179,13 @@ def callback():
 
     # Send user back to homepage
     return redirect(url_for("index"))
+
+
+def is_user_in_db(useremail):
+    user = User.query.filter_by(email=useremail).first()
+    if user:
+        return True
+    return False
 
 
 @app.route("/logout")
@@ -284,5 +290,5 @@ def create_team():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(debug=True, ssl_context="adhoc")  # for local use only
+    # app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    app.run(debug=True, ssl_context="adhoc")  # for local use only
