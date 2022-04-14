@@ -291,5 +291,5 @@ def create_team():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(debug=True, ssl_context="adhoc")  # for local use only
+    # app.run(debug=True, host=HOST, port=PORT)  # for deployment
+    app.run(debug=True, ssl_context="adhoc")  # for local use only
