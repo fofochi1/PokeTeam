@@ -267,7 +267,13 @@ def search():
             "moves": list(map(mapper, response["moves"])),
         }
 
-    return render_template("search.html", data=data)
+    return render_template(
+        "search.html",
+        data=data,
+        user_name=current_user.name,
+        user_email=current_user.email,
+        user_pic=current_user.pic,
+    )
 
 
 @app.route("/add_pokemon/<species_no>", methods=["POST"])
