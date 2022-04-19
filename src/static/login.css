@@ -1,0 +1,31 @@
+body{
+    text-align: center;
+    background-color: #D0F4FC;
+}
+
+.titleImage{
+    width: 300px;
+    padding-top: 10px;
+}
+
+.googleButton{
+    padding: 15px;
+}
+
+.btn{
+    background-color: #fafbfc;
+    border-color: #039728; /*set the color you want here*/
+}
+.title{
+    padding-top: 30%;
+}
+
+.slides{
+    width: 500px;
+    height: 400px;
+    margin: auto;
+}
+
+.nav-link{
+    color: white;
+}
