@@ -1,4 +1,4 @@
-.team {
+/* .team {
     width: 380px;
 }
 
@@ -16,6 +16,38 @@
 
 .square {
     background-color: gray;
+    width: 100px;
+    height: 100px;
+} */
+
+
+/* .mainTeam{
+    width: auto;
+} */
+body {
+    background-color: #D0F4FC;
+    text-align: center;
+}
+
+.team {
+    width: 380px;
+    margin-left: 36%;
+}
+
+.team-grid {
+    background-color: #D0F4FC;
+
+    height: 240px;
+
+    display: grid;
+    grid-template-columns: auto auto auto;
+
+    grid-gap: 10px;
+    padding: 10px;
+}
+
+.square {
+    background-color: whitesmoke;
     width: 100px;
     height: 100px;
 }

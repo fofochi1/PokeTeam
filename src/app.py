@@ -233,7 +233,13 @@ def teams():
 
     data["team"] = team
     data["pokemon_list"] = pokemon_list
-    return render_template("teams.html", data=data)
+    return render_template(
+        "teams.html",
+        data=data,
+        user_name=current_user.name,
+        user_email=current_user.email,
+        user_pic=current_user.pic,
+    )
 
 
 @app.route("/search", methods=["GET", "POST"])
