@@ -29,3 +29,14 @@ body{
 .nav-link{
     color: white;
 }
+
+.landingPage{
+    border-radius: 5px;
+    border-style: dotted;
+    border: black;
+    width: 300px;
+    margin: auto;
+    background: powderblue;
+    border-color: black;
+    margin-bottom: 5px;
+}
