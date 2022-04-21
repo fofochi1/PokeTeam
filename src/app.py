@@ -19,22 +19,9 @@ import requests
 
 # Third party libraries
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import (
-    LoginManager,
-    current_user,
-    login_required,
-    login_user,
-    logout_user,
-)
+from flask_login import LoginManager, current_user
 from oauthlib.oauth2 import WebApplicationClient
-from modules.data.env import (
-    DATABASE_URL,
-    GOOGLE_CLIENT_ID,
-    GOOGLE_CLIENT_SECRET,
-    GOOGLE_DISCOVERY_URL,
-    HOST,
-    PORT,
-)
+from modules.data.env import DATABASE_URL, GOOGLE_CLIENT_ID, HOST, PORT
 from modules.data.models import *
 
 
@@ -48,10 +35,6 @@ login_manager.init_app(app)
 
 # OAuth2 client setup
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-
-def get_google_provider_cfg():
-    return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
 environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
@@ -79,133 +62,11 @@ def check_api_status_call(response):
     return code
 
 
-@login_manager.user_loader
-def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in the query for the user
-    return User.query.get(int(user_id))
-
-
-@login_manager.unauthorized_handler
-def unauthorized():
-    return "You must be logged in to access this content.", 403
-
-
-@app.route("/")
-def index():
-    # will redirect the user to the appropriate page according to if they are logged in
-    if current_user.is_authenticated:
-        print("You may pass")
-        return redirect(url_for("main"))
-    print("You may not pass")
-    return redirect(url_for("login"))
-
-
-@app.route("/login_request")
-def login_request():
-    # Find out what URL to hit for Google login
-    google_provider_cfg = get_google_provider_cfg()
-    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
-
-    # Use library to construct the request for login and provide
-    # scopes that let you retrieve user's profile from Google
-    request_uri = client.prepare_request_uri(
-        authorization_endpoint,
-        redirect_uri=request.base_url + "/callback",
-        scope=["openid", "email", "profile"],
-    )
-    return redirect(request_uri)
-
-
-@app.route("/login")
-def login():
-    print("Yay, logging in")
-    return render_template("login.html")
-
-
-@app.route("/login_request/callback")
-def callback():
-    # Get authorization code Google sent back to you
-    code = request.args.get("code")
-
-    # Find out what URL to hit to get tokens that allow you to ask for
-    # things on behalf of a user
-    google_provider_cfg = get_google_provider_cfg()
-    token_endpoint = google_provider_cfg["token_endpoint"]
-
-    # Prepare and send request to get tokens! Yay tokens!
-    token_url, headers, body = client.prepare_token_request(
-        token_endpoint,
-        authorization_response=request.url,
-        redirect_url=request.base_url,
-        code=code,
-    )
-    token_response = requests.post(
-        token_url,
-        headers=headers,
-        data=body,
-        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
-    )
-
-    # Parse the tokens!
-    client.parse_request_body_response(json.dumps(token_response.json()))
-
-    # Now that we have tokens (yay) let's find and hit URL
-    # from Google that gives you user's profile information,
-    # including their Google Profile Image and Email
-    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-    uri, headers, body = client.add_token(userinfo_endpoint)
-    userinfo_response = requests.get(uri, headers=headers, data=body)
-
-    # We want to make sure their email is verified.
-    # The user authenticated with Google, authorized our
-    # app, and now we've verified their email through Google!
-    if userinfo_response.json().get("email_verified"):
-        users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
-        users_name = userinfo_response.json()["given_name"]
-    else:
-        return "User email not available or not verified by Google.", 400
-
-    user = User.query.filter_by(email=users_email).first()
-    if user is None:
-        user = User(email=users_email, name=users_name, pic=picture)
-        print("Adding a new user")
-        # if not add them to db
-        db.session.add(user)
-        db.session.commit()
-
-    # Begin user session by logging the user in
-    print("Already a saved user")
-    login_user(user)
-
-    # Send user back to homepage
-    return redirect(url_for("index"))
-
-
 def is_user_in_db(useremail):
     user = User.query.filter_by(email=useremail).first()
     if user:
         return True
     return False
-
-
-@app.route("/logout")
-@login_required
-def logout():
-    # logout the current user with flask login and redirect to main page
-    logout_user()
-    return redirect(url_for("index"))
-
-
-@app.route("/main")
-@login_required
-def main():
-    return render_template(
-        "index.html",
-        user_name=current_user.name,
-        user_email=current_user.email,
-        user_pic=current_user.pic,
-    )
 
 
 @app.route("/teams", methods=["GET", "POST"])
@@ -303,5 +164,5 @@ def create_team():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host=HOST, port=PORT)  # for deployment
-    # app.run(debug=True, ssl_context="adhoc")  # for local use only
+    # app.run(host=HOST, port=PORT)  # for deployment
+    app.run(debug=True, host=HOST, port=PORT, ssl_context="adhoc")  # for local use only

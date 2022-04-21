@@ -13,7 +13,6 @@ if DATABASE_URL.startswith("postgres://"):
 # google
 GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 # heroku
 HOST = getenv("IP", "0.0.0.0")

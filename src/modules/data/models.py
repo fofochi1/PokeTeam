@@ -1,4 +1,4 @@
-# pylint: disable = missing-class-docstring, no-member, too-few-public-methods
+# pylint: disable = missing-class-docstring, no-member
 """
 Disabled Pylint Warnings & Justifications:
 missing-class-docstring: unnecessary, classes are already straightforward
@@ -41,25 +41,26 @@ class Pokemon(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     owner = db.Column(db.Integer, db.ForeignKey("User.id"))
 
-    ability = db.Column(db.Integer, db.ForeignKey("Ability.id"))
+    ability = db.Column(db.Integer)
     species_no = db.Column(db.Integer)  # National Dex no.
 
 
-class Ability(db.Model):
-    __tablename__ = "Ability"
-    id = db.Column(db.Integer, primary_key=True)
+# unneeded tables
+# class Ability(db.Model):
+#     __tablename__ = "Ability"
+#     id = db.Column(db.Integer, primary_key=True)
 
 
-class Move(db.Model):
-    __tablename__ = "Move"
-    id = db.Column(db.Integer, primary_key=True)
+# class Move(db.Model):
+#     __tablename__ = "Move"
+#     id = db.Column(db.Integer, primary_key=True)
 
 
 # relationships (cross-referencing tables)
 class PokemonHasMove(db.Model):
     __tablename__ = "PokemonHasMove"
     pokemon = db.Column(db.Integer, db.ForeignKey("Pokemon.id"), primary_key=True)
-    move = db.Column(db.Integer, db.ForeignKey("Move.id"), primary_key=True)
+    move = db.Column(db.Integer, primary_key=True)
 
 
 class TeamHasPokemon(db.Model):
