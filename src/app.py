@@ -46,37 +46,3 @@ if __name__ == "__main__":
     init_login_manager(app)
     # app.run(debug=True, host=HOST, port=PORT, ssl_context="adhoc")  # development
     app.run(host=HOST, port=PORT)  # production
-
-
-# @app.route("/teams", methods=["GET", "POST"])
-# def teams():
-#     data = {"team": None, "pokemon_list": None}
-#     team = Team.query.filter_by(owner=current_user.id).first()
-#     pokemon_list = None
-#     if team is not None:
-
-#         def mapper(entry):
-#             pokemon = entry[0]
-#             response = requests.get(
-#                 f"https://pokeapi.co/api/v2/pokemon/{pokemon.species_no}"
-#             ).json()
-#             setattr(pokemon, "image", response["sprites"]["front_default"])
-#             return pokemon
-
-#         query_result = (
-#             db.session.query(Pokemon, TeamHasPokemon)
-#             .filter(TeamHasPokemon.team == team.id)
-#             .filter(TeamHasPokemon.pokemon == Pokemon.id)
-#             .all()
-#         )
-#         pokemon_list = list(map(mapper, query_result))
-
-#     data["team"] = team
-#     data["pokemon_list"] = pokemon_list
-#     return render_template(
-#         "teams.html",
-#         data=data,
-#         user_name=current_user.name,
-#         user_email=current_user.email,
-#         user_pic=current_user.pic,
-#     )

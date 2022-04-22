@@ -17,15 +17,14 @@ from ..misc.parse_response import parse_response
 BASE_URL = "https://pokeapi.co/api/v2/"
 
 
-def search(**args):
-    category = args["category"].lower()
-    search_term = args["search_term"].lower()
-    response = get(f"{BASE_URL}{category}/{search_term}")
-    return parse_response(response)
-
-
 def get_id_from_url(url):
-    return int(url.split("/")[-2])
+    _id = None
+    try:
+        _id = int(url.split("/")[-2])
+    except (IndexError, ValueError):
+        pass
+
+    return _id
 
 
 def get_pokemon_data(pokemon):
@@ -72,4 +71,11 @@ def get_pokemon_data(pokemon):
     else:
         pass
 
-    return main_data
+    return main_data, error
+
+
+def search(**args):
+    category = args["category"].lower()
+    search_term = args["search_term"].lower()
+    response = get(f"{BASE_URL}{category}/{search_term}")
+    return parse_response(response)

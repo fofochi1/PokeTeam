@@ -19,7 +19,7 @@ from ..data.models import db, User
 from ..functions.external_apis.google import get_google_user, get_login_request_uri
 
 
-login_blueprint = Blueprint("login", __name__)
+login_blueprint = Blueprint("login", __name__, static_folder="../../static")
 
 
 @login_blueprint.route("/login")
