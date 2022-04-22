@@ -9,7 +9,8 @@ relative-beyond-top-level: pylint doesn't seem to like relative imports
 ### IMPORTS
 # third-party
 from unittest import main, TestCase
-from unittest.mock import MagicMock, patch
+
+# from unittest.mock import MagicMock, patch
 
 # native
 from .pokeapi import (
