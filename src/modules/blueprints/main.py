@@ -39,9 +39,10 @@ def search():
             flash("A Pokemon with that name (or ID) could not be found.")
             return redirect(url_for("main.search"))
 
+    team = Team.query.filter_by(owner=current_user.id).first()
     query_result = (
         db.session.query(Pokemon, TeamHasPokemon)
-        .filter(TeamHasPokemon.team == Team.id)
+        .filter(TeamHasPokemon.team == team.id)
         .filter(TeamHasPokemon.pokemon == Pokemon.id)
         .all()
     )
@@ -69,7 +70,7 @@ def teams():
 
         query_result = (
             db.session.query(Pokemon, TeamHasPokemon)
-            .filter(TeamHasPokemon.team == Team.id)
+            .filter(TeamHasPokemon.team == team.id)
             .filter(TeamHasPokemon.pokemon == Pokemon.id)
             .all()
         )
