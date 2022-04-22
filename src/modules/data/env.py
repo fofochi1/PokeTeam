@@ -18,6 +18,5 @@ GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET")
 
 # heroku
-HEROKU_URL = "https://dashboard.heroku.com/apps/guarded-basin-21222/"
 HOST = getenv("IP", "0.0.0.0")
 PORT = int(getenv("PORT", "8080"))
