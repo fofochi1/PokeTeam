@@ -9,12 +9,13 @@ relative-beyond-top-level: pylint doesn't seem to like relative imports
 ### IMPORTS
 # third-party
 from unittest import main, TestCase
+from unittest.mock import MagicMock, patch
 
 # native
 from .pokeapi import (
     get_id_from_url,
     # get_pokemon_data,
-    # search
+    search,
 )
 
 
@@ -41,7 +42,18 @@ class TestGetIdFromUrl(TestCase):
 # class TestGetPokemonData(TestCase):
 
 
-# class TestSearch(TestCase):
+class TestSearch(TestCase):
+    def test_bad_category(self):
+        # cheating, can't figure out how to mock without errors
+        _input = {"category": "", "search_term": "Typhlosion"}
+        # yields "ValueError: Empty module name"
+        # mock_response = MagicMock()
+        # with patch("pokeapi.get") as mock_requests_get:
+        #     mock_requests_get.return_value = mock_response
+
+        output = search(category=_input["category"], search_term=_input["search_term"])
+        expected_output = (None, "Invalid category or search term")
+        self.assertEqual(output, expected_output)
 
 
 if __name__ == "__main__":
