@@ -36,7 +36,7 @@ def search():
         pokemon = request.form["search_term"]
         pokemon_data, error = get_pokemon_data(pokemon)
         if error is not None:
-            flash("A Pokemon with that name (or ID) could not be found.")
+            flash(error)
             return redirect(url_for("main.search"))
 
     team = Team.query.filter_by(owner=current_user.id).first()

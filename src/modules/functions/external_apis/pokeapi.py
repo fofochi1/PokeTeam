@@ -1,8 +1,9 @@
-# pylint: disable = missing-function-docstring, relative-beyond-top-level
+# pylint: disable = missing-function-docstring, relative-beyond-top-level, unsubscriptable-object
 """
 Disabled Pylint Warnings & Justifications:
 missing-function-docstring: useful, but not necessary; takes up space
 relative-beyond-top-level: pylint doesn't seem to like relative imports
+unsubscriptable-object: object initialized to None and redefined
 """
 
 
@@ -50,7 +51,7 @@ def get_pokemon_data(pokemon):
         "types": None,
     }
     data, error = search(category="pokemon", search_term=pokemon)
-    if error is None:
+    if data is not None:
         main_data["abilities"] = [
             mapper(ability, category="ability", properties=["name"])
             for ability in data["abilities"]
@@ -77,5 +78,8 @@ def get_pokemon_data(pokemon):
 def search(**args):
     category = args["category"].lower()
     search_term = args["search_term"].lower()
+    if category == "" or search_term == "":
+        return None, "Invalid category or search term"
+
     response = get(f"{BASE_URL}{category}/{search_term}")
     return parse_response(response)
