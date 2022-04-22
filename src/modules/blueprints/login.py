@@ -8,7 +8,7 @@ relative-beyond-top-level: pylint doesn't seem to like relative imports
 
 ### IMPORTS
 ## third-party
-from flask import Blueprint, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
 ## native
@@ -41,7 +41,7 @@ def login_request():
         base_url = base_url.replace("http://", "https://")
 
     request_uri = get_login_request_uri(base_url=base_url)
-    return jsonify(request_uri)
+    return redirect(request_uri)
 
 
 @login_blueprint.route("/login_request/callback")
