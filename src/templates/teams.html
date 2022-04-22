@@ -7,8 +7,8 @@
         <nav class="navbar navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                  <img src="{{user_pic}}" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                  {{user_name}}
+                  <img src="{{current_user.picture}}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                  {{current_user.name}}
                 </a>
                         <a class="nav-link active" aria-current="page" href="/">The Pokedex</a>
     
@@ -28,8 +28,8 @@
                     {% for i in range(6) %}
                         {% if i < data.pokemon_list | length %}
                             <!-- render image of Pokemon -->
-                            <form action="" method="get"> <!-- change action later: "/pokemon/{{ data.pokemon_list[i].id }}" -->
-                                <input type="image" width="100" height="100" src={{ data.pokemon_list[i].image }}>
+                            <form action="/api/delete_pokemon/{{ data.pokemon_list[i].id }}" method="post">
+                                <input type="image" width="100" height="100" src={{ data.pokemon_list[i].sprite }} title="Remove from team">
                             </form>
                         {% else %}
                             <!-- render clickable blank square -->
@@ -41,7 +41,7 @@
                 </div>
             </div>
         {% else %}
-            <form action="/create_team" method="post">
+            <form action="/api/create_team" method="post">
                 <input type="submit" value="Create team">
             </form>
         {% endif %}

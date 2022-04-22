@@ -13,8 +13,8 @@
         <nav class="navbar navbar-dark bg-dark">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">
-                  <img src="{{user_pic}}" alt="" width="30" height="24" class="d-inline-block align-text-top">
-                  {{user_name}}
+                  <img src="{{current_user.picture}}" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                  {{current_user.name}}
                 </a>
                         <a class="nav-link active" aria-current="page" href="/">The Pokedex</a>
 
@@ -76,13 +76,13 @@
         </div>
         -->
     <!--   <div class="user">
-            <h3>Welcome {{user_name}}</h3>
+            <h3>Welcome {{current_user.name}}</h3>
 
 
-            <p>Hello, {{user_name}}! You're logged in! </p>
+            <p>Hello, {{current_user.name}}! You're logged in! </p>
             <p>Email: {{user_email}}</p>
             <p>Google Profile Picture:</p>
-            <img src="{{user_pic}}" alt="Google profile pic"></img>
+            <img src="{{current_user.picture}}" alt="Google profile pic"></img>
         </div>
 
         <a class="button" href="/logout">Logout</a>

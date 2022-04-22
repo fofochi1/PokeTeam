@@ -10,11 +10,14 @@ DATABASE_URL = getenv("DATABASE_URL")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
 
+# flask
+APP_SECRET_KEY = getenv("APP_SECRET_KEY")
+
 # google
 GOOGLE_CLIENT_ID = getenv("GOOGLE_CLIENT_ID")
 GOOGLE_CLIENT_SECRET = getenv("GOOGLE_CLIENT_SECRET")
-GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 # heroku
+HEROKU_URL = "https://dashboard.heroku.com/apps/guarded-basin-21222/"
 HOST = getenv("IP", "0.0.0.0")
 PORT = int(getenv("PORT", "8080"))
