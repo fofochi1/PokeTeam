@@ -13,12 +13,8 @@ Users must sign in with a Google account.
 This app uses Flask, HTML, CSS and Jinja, SQLAlchemy
 
 
-### Libraries
-os, requests, python-dotenv, Flask, Flask-Login, Flask-SQLAlchemy, OAuth
-
-
 ### APIs
-[Google OAuth](https://console.cloud.google.com/)
+[Google OAuth](https://console.cloud.google.com/)\
 [PokéAPI](https://pokeapi.co/)
 
 #### Instructions
